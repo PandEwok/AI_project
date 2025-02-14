@@ -1,0 +1,21 @@
+﻿  Enemy.cpp
+  Entity.cpp
+  Grid.cpp
+D:\AI_project\Project1\Grid.cpp(10,66): warning C4244: 'argument' : conversion de 'int' en 'T', perte possible de données
+D:\AI_project\Project1\Grid.cpp(10,66): warning C4244:         with
+D:\AI_project\Project1\Grid.cpp(10,66): warning C4244:         [
+D:\AI_project\Project1\Grid.cpp(10,66): warning C4244:             T=float
+D:\AI_project\Project1\Grid.cpp(10,66): warning C4244:         ]
+D:\AI_project\Project1\Grid.cpp(10,51): warning C4244: 'argument' : conversion de 'int' en 'T', perte possible de données
+D:\AI_project\Project1\Grid.cpp(10,51): warning C4244:         with
+D:\AI_project\Project1\Grid.cpp(10,51): warning C4244:         [
+D:\AI_project\Project1\Grid.cpp(10,51): warning C4244:             T=float
+D:\AI_project\Project1\Grid.cpp(10,51): warning C4244:         ]
+  main.cpp
+  Player.cpp
+  Génération de code en cours
+  324 of 333 functions (97.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    2 functions had inline decision re-evaluated but remain unchanged
+  Fin de la génération du code
+  Project1.vcxproj -> D:\AI_project\x64\Release\Project1.exe

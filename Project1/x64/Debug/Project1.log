@@ -1,0 +1,19 @@
+﻿  Enemy.cpp
+D:\AI project\Project1\Entity.hpp(4,10): error C1083: Impossible d'ouvrir le fichier include : 'SFML/Graphics.hpp' : No such file or directory
+  (compiler le fichier source 'Enemy.cpp')
+  
+  Entity.cpp
+D:\AI project\Project1\Entity.hpp(4,10): error C1083: Impossible d'ouvrir le fichier include : 'SFML/Graphics.hpp' : No such file or directory
+  (compiler le fichier source 'Entity.cpp')
+  
+  Grid.cpp
+D:\AI project\Project1\grid.hpp(5,10): error C1083: Impossible d'ouvrir le fichier include : 'SFML/Graphics.hpp' : No such file or directory
+  (compiler le fichier source 'Grid.cpp')
+  
+  main.cpp
+D:\AI project\Project1\main.cpp(1,10): error C1083: Impossible d'ouvrir le fichier include : 'SFML/Graphics.hpp' : No such file or directory
+  Player.cpp
+D:\AI project\Project1\Entity.hpp(4,10): error C1083: Impossible d'ouvrir le fichier include : 'SFML/Graphics.hpp' : No such file or directory
+  (compiler le fichier source 'Player.cpp')
+  
+  Génération de code en cours...
