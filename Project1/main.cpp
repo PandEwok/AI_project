@@ -3,6 +3,7 @@
 #include "Enemy.hpp"
 #include "Grid.hpp"
 #include <vector>
+#include "Ally.hpp"
 
 
 const int WINDOW_WIDTH = 800;
@@ -13,7 +14,8 @@ int main() {
     window.setFramerateLimit(60);
 
     Player player(200, 400);
-    std::vector<Enemy> enemies = { Enemy(100, 100), Enemy(700, 100) };
+    std::vector<Ally> allies = { Ally(100, 100)};
+    std::vector<Enemy> enemies = {Enemy(700, 100) };
     Grid grid;
     grid.loadFromFile("map.txt");
 
@@ -39,6 +41,8 @@ int main() {
         window.draw(player.shape);
         for (const auto& enemy : enemies)
             window.draw(enemy.shape);
+        for (const auto& ally : allies)
+            window.draw(ally.shape);
         window.display();
     }
     return 0;
