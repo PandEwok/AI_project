@@ -3,18 +3,16 @@
 
 #include "Entity.hpp"
 #include "Player.hpp"
+#include <vector>
 
 class Ally : public Entity {
 public:
     static constexpr float SPEED = 125.0f;
-    float deltaTime = 0.0f;  // Store the latest deltaTime
+    float deltaTime = 0.0f;
 
     Ally(float x, float y);
     void update(float deltaTime, Grid& grid) override;
 };
-
-
-
 
 class Action {
 public:
@@ -23,18 +21,17 @@ public:
     virtual ~Action() {}
 };
 
-class ProtectPlayerAction : public Action {
+class ChasePlayerAction : public Action {
 private:
-    Ally* ally;  // Pointer to the ally that will execute this action
+    Ally* ally;
 public:
-    ProtectPlayerAction(Ally* ally) : ally(ally) {}
-
+    ChasePlayerAction(Ally* ally);
     bool CanExecute() override;
     void Execute() override;
 };
 
-
 enum class Goal {
+    Chase,
     Revive,
     Defend
 };
@@ -42,24 +39,22 @@ enum class Goal {
 class GOAPPlanner {
 public:
     GOAPPlanner();
-    std::vector<Action*> Plan(Goal& goal, Ally* ally);
-
-
+    std::vector<Action*> Plan(Goal goal, Ally* ally);
 };
-class GOAPAgent {   
+
+class GOAPAgent {
 public:
-    Goal goal = Goal::Defend;
+    Goal goal;
     GOAPPlanner planner;
-    Ally* owner;  // The Ally that owns this GOAPAgent
-    std::vector<Action*> plan = planner.Plan(goal, owner);
+    Ally* owner;
+    std::vector<Action*> plan;
 
-    GOAPAgent(Ally* ally) : owner(ally) {
-        plan = planner.Plan(goal, owner);  // Pass the Ally instance
-    }
+    GOAPAgent(Ally* ally);
 
+    void UpdateGoal(Goal newGoal);
+    void UpdatePlan();
     void PerformActions();
-
     std::vector<Action*> getPlan();
 };
 
-#endif // Ally_HPP
+#endif // ALLY_HPP

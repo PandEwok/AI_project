@@ -39,6 +39,7 @@ int main() {
         }
 
         player.update(deltaTime, grid);
+        player.checkForEnemies(enemies);  // Check if enemies are nearby
         for (auto& enemy : enemies) {
             enemy.update(deltaTime, grid);
         }

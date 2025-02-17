@@ -1,6 +1,6 @@
-// player.cpp
 #include "Player.hpp"
 #include <SFML/Window/Keyboard.hpp>
+#include <cmath>
 
 Player::Player(float x, float y) : Entity(x, y, sf::Color::Blue) {}
 
@@ -14,7 +14,6 @@ void Player::update(float deltaTime, Grid& grid) {
     sf::Vector2f newPosition = shape.getPosition() + movement;
     sf::FloatRect newBounds(newPosition, shape.getSize());
 
-    // Vérifier les quatre coins du joueur
     auto isWalkable = [&](float x, float y) {
         int gridX = static_cast<int>(x / CELL_SIZE);
         int gridY = static_cast<int>(y / CELL_SIZE);
@@ -29,13 +28,30 @@ void Player::update(float deltaTime, Grid& grid) {
     }
 }
 
+void Player::checkForEnemies(const std::vector<Enemy>& enemies) {
+    enemyNear = false;  // Reset flag
+
+    for (const Enemy& enemy : enemies) {
+        float distance = std::sqrt(std::pow(enemy.shape.getPosition().x - shape.getPosition().x, 2) +
+            std::pow(enemy.shape.getPosition().y - shape.getPosition().y, 2));
+        if (distance <= DETECTION_RADIUS) {
+            enemyNear = true;
+			std::cout << "Enemy detected!\n";
+            return;  // Stop checking after detecting one enemy
+        }
+    }
+}
+
 sf::Vector2f Player::getPosition() {
-	return shape.getPosition();
+    return shape.getPosition();
 }
 
 bool Player::getisAlive() {
-	return isAlive;
+    return isAlive;
+}
 
+bool Player::getIsEnemyNear() {
+    return enemyNear;
 }
 
 Player player(200, 400);
