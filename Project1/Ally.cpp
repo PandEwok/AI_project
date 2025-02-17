@@ -7,107 +7,70 @@
 Ally::Ally(float x, float y) : Entity(x, y, sf::Color::Yellow) {}
 
 void Ally::update(float deltaTime, Grid& grid) {
-
+    this->deltaTime = deltaTime;  // Store the latest deltaTime
 }
 
-class State {
-public:
-    bool hasFood = false;  // La nourriture est-elle disponible ?
-    int hunger = 100;      // Le niveau de faim (100 = faim maximale)
 
-    bool HasFood() const { return hasFood; }
-    int GetHunger() const { return hunger; }
 
-    void SetFood(bool food) { hasFood = food; }
-    void ReduceHunger() { hunger = std::max(0, hunger - 50); }  // Réduit la faim de 50 points
-    void SetHunger(int level) { hunger = level; }
-};
-
-class Action {
-public:
-    virtual bool CanExecute(const State& state) = 0;
-    virtual void Execute(State& state) = 0;
-    virtual ~Action() {}
-};
-
-class EatAction : public Action {
-public:
-    bool CanExecute(const State& state) override {
-        return state.HasFood() && state.GetHunger() > 0;
+//ProtectPlayerAction
+bool ProtectPlayerAction::CanExecute() {
+    return player.getisAlive();  // Peut chercher de la nourriture si l'agent n'en a pas
+}
+void ProtectPlayerAction::Execute() {
+    if (!ally) {
+        std::cout << "Error: ProtectPlayerAction has a null ally reference!\n";
+        return;
     }
 
-    void Execute(State& state) override {
-        std::cout << "L'agent mange.\n";
-        state.ReduceHunger();  // Réduit la faim après avoir mangé
-        state.SetFood(false);   // Après avoir mangé, il n'y a plus de nourriture
-    }
-};
+    sf::Vector2f playerPos = player.getPosition();
+    sf::Vector2f allyPos = ally->shape.getPosition();
+    float deltaTime = ally->deltaTime;  // Get the stored deltaTime
 
-class SearchFoodAction : public Action {
-public:
-    bool CanExecute(const State& state) override {
-        return !state.HasFood();  // Peut chercher de la nourriture si l'agent n'en a pas
-    }
+    float distance = std::sqrt(std::pow(playerPos.x - allyPos.x, 2) + std::pow(playerPos.y - allyPos.y, 2));
+    if (distance > 75) {
+        sf::Vector2f direction = playerPos - allyPos;
 
-    void Execute(State& state) override {
-        std::cout << "L'agent cherche de la nourriture.\n";
-        state.SetFood(true);  // Trouve de la nourriture
-    }
-};
-
-enum class Goal {
-    Manger,
-    ChercherNourriture
-};
-
-
-class GOAPPlanner {
-public:
-    std::vector<Action*> Plan(const State& initialState, Goal goal) {
-        std::vector<Action*> plan;
-
-        if (goal == Goal::Manger) {
-            if (initialState.GetHunger() > 0 && !initialState.HasFood()) {
-                plan.push_back(new SearchFoodAction());
-                plan.push_back(new EatAction());
-            }
-            else if (initialState.HasFood()) {
-                plan.push_back(new EatAction());
-            }
+        // Normalize direction
+        float length = std::sqrt(std::pow(direction.x, 2) + std::pow(direction.y, 2));
+        if (length > 0) {
+            direction.x /= length;
+            direction.y /= length;
         }
 
-        return plan;
+        // Apply deltaTime for smooth movement
+        ally->shape.move(direction * Ally::SPEED * deltaTime);
+
+        //std::cout << "Ally moving towards player. Distance: " << distance << "\n";
     }
-};
+}
 
-class GOAPAgent {
-private:
-    State state;
-    GOAPPlanner planner;
 
-public:
-    GOAPAgent() {
-        state.SetHunger(100);  // Initialement, l'agent a faim
+
+
+
+GOAPPlanner::GOAPPlanner() {};
+
+std::vector<Action*> GOAPPlanner::Plan(Goal& goal, Ally* ally) {
+    std::vector<Action*> plan;
+    if (goal == Goal::Defend) {
+        plan.push_back(new ProtectPlayerAction(ally));
     }
+    return plan;
+}
 
-    void PerformActions() {
-        Goal goal = Goal::Manger;  // L'objectif de l'agent est de manger
 
-        std::vector<Action*> plan = planner.Plan(state, goal);
-
-        for (auto action : plan) {
-            if (action->CanExecute(state)) {
-                action->Execute(state);  // Exécute l'action
-            }
-            else {
-                std::cout << "Action impossible : " << typeid(*action).name() << "\n";
-            }
-            delete action;  // Libérer la mémoire
+void GOAPAgent::PerformActions() {
+    for (auto& action : plan) {
+        if (action->CanExecute()) {
+            action->Execute();  // Pass deltaTime
+        }
+        else {
+            std::cout << "Action impossible: " << typeid(*action).name() << "\n";
         }
     }
+}
 
-    void PrintState() {
-        std::cout << "Faim: " << state.GetHunger() << "\n";
-        std::cout << "Nourriture disponible: " << (state.HasFood() ? "Oui" : "Non") << "\n";
-    }
-};
+
+std::vector<Action*> GOAPAgent::getPlan() {
+	return plan;
+}

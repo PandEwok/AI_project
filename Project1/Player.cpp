@@ -28,3 +28,14 @@ void Player::update(float deltaTime, Grid& grid) {
         shape.move(movement);
     }
 }
+
+sf::Vector2f Player::getPosition() {
+	return shape.getPosition();
+}
+
+bool Player::getisAlive() {
+	return isAlive;
+
+}
+
+Player player(200, 400);

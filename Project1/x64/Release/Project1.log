@@ -1,7 +1,11 @@
 ﻿  Ally.cpp
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Ally.cpp(29,20): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Ally.cpp(34,22): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+  main.cpp
+  Player.cpp
   Génération de code en cours
-  0 of 381 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  4 of 504 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    10 functions had inline decision re-evaluated but remain unchanged
   Fin de la génération du code
   Project1.vcxproj -> C:\Users\jtranhuu\source\repos\PandEwok\AI_project\x64\Release\Project1.exe
