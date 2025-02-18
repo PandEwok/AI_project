@@ -9,9 +9,10 @@
 
 class Player : public Entity {
 private:
+    const std::vector<Enemy>* enemyList = nullptr;  // Store reference to enemies
     bool isAlive = true;
     bool enemyNear = false;
-    static constexpr float DETECTION_RADIUS = 200.0f;
+    static constexpr float DETECTION_RADIUS = 250.0f;
 
 public:
     static constexpr float SPEED = 200.0f;
@@ -19,9 +20,12 @@ public:
     void update(float deltaTime, Grid& grid) override;
     sf::Vector2f getPosition();
     bool getisAlive();
+	void setIsAlive(bool alive);
     bool getIsEnemyNear();
 
-    void checkForEnemies(const std::vector<Enemy>& enemies);  // New function
+    void checkForEnemies(const std::vector<Enemy>& enemies);
+    sf::Vector2f getNearestEnemyPosition();
+
 };
 
 extern Player player;
