@@ -2,7 +2,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <cmath>
 
-Player::Player(float x, float y) : Entity(x, y, sf::Color::Blue) {}
+Player::Player(float x, float y) : Entity(x, y, sf::Color::Blue) { SPEED = 250.0f; }
 
 void Player::update(float deltaTime, Grid& grid) {
 
@@ -18,9 +18,8 @@ void Player::update(float deltaTime, Grid& grid) {
         //DEBUG
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) isAlive = !isAlive;
 
-
-        sf::Vector2f newPosition = shape.getPosition() + movement;
-        sf::FloatRect newBounds(newPosition, shape.getSize());
+    sf::Vector2f newPosition = shape.getPosition() - shape.getSize()/2.f + movement;
+    sf::FloatRect newBounds(newPosition, shape.getSize());
 
         auto isWalkable = [&](float x, float y) {
             int gridX = static_cast<int>(x / CELL_SIZE);

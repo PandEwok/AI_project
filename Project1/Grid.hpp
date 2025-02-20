@@ -1,28 +1,26 @@
-#ifndef GRID_HPP
-#define GRID_HPP
+#pragma once
 
-#include <vector>
-#include <SFML/Graphics.hpp>
-#include <string>
+#include "Global.hpp"
 
 const int GRID_WIDTH = 20;
 const int GRID_HEIGHT = 15;
 const int CELL_SIZE = 40;
 
 struct Cell {
+public:
     bool walkable;
-    sf::Vector2f position;
-    sf::RectangleShape shape;
+    Vector2f position;
+    RectangleShape shape;
 };
 
 class Grid {
 public:
     Grid();
-    void loadFromFile(const std::string& filename);
-    void draw(sf::RenderWindow& window);
+    void loadFromFile(const string& filename);
+    void draw(RenderWindow& window);
     Cell& getCell(int x, int y);
 private:
-    std::vector<std::vector<Cell>> cells;
+    vector<vector<Cell>> cells;
 };
 
-#endif      
+extern Grid grid;

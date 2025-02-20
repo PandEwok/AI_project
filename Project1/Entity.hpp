@@ -1,13 +1,16 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
-#include <SFML/Graphics.hpp>
 #include "Grid.hpp"
 
 class Entity {
 public:
-    sf::RectangleShape shape;
+    RectangleShape shape;
+    float SPEED = 180.0f;
     sf::Vector2f velocity;
+    vector<Vector2i> waypoints = {};
+    int currentWaypoint = 0;
+    int waypointChange = 1;
 
     Entity(float x, float y, sf::Color color);
     virtual void update(float deltaTime, Grid& grid) = 0;
