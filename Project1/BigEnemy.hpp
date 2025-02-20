@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Enemy.hpp"
+#include "Pathfinding.hpp"
 
 class BigEnemy : public Enemy {
 private:

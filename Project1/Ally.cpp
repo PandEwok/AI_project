@@ -61,7 +61,6 @@ bool ChasePlayerAction::CanExecute() {
 }
 
 void ChasePlayerAction::Execute() {
-	cout << player.getisAlive() << endl;
     if (!ally) {
         cout << "Error: ChasePlayerAction has a null ally reference!\n";
         return;
@@ -153,9 +152,6 @@ void RevivePlayerAction::Execute() {
         ally->shape.setFillColor(Color::Yellow);
     }
 }
-
-
-
 
 
 
@@ -266,7 +262,6 @@ void GOAPAgent::PerformActions() {
 		UpdateGoal(Goal::Death);
 	}
     else if (player.getIsEnemyNear() && player.getisAlive()) {
-        cout << endl << endl << endl << "wrar :3" << endl << endl << endl;
         UpdateGoal(Goal::Defend);
     }
     else if (!player.getisAlive()) {

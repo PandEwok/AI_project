@@ -61,7 +61,7 @@ bool Player::checkForEnemies(vector<shared_ptr<Enemy>>& enemies, vector<shared_p
 
             if (distance <= DETECTION_RADIUS) {
                 enemyNear = true;
-                cout << "Enemy detected!\n";
+                //cout << "Enemy detected!\n";
                 return enemyNear;  // Stop checking after detecting one enemy
             }
         }
