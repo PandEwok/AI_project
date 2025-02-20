@@ -4,7 +4,6 @@
 #include "Entity.hpp"
 #include "Ally.hpp"
 #include "Player.hpp"  // Added this include
-#include <vector>
 
 class Ally;
 class Player;  // Forward declaration in case of circular dependencies
@@ -19,7 +18,7 @@ public:
 
     void update(float deltaTime, Grid& grid) override;
 
-    void checkForAllyCollision(std::vector<Ally>& allies);
+    void checkForAllyCollision(vector<Ally>& allies);
     void checkForPlayerCollision(Player& player);
 
     bool isStunned() const;

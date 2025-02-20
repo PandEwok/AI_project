@@ -2,7 +2,7 @@
 #include <cmath>
 #include <iostream>
 
-Ally::Ally(float x, float y) : Entity(x, y, sf::Color::Yellow) {}
+Ally::Ally(float x, float y) : Entity(x, y, Color::Yellow) {}
 
 void Ally::update(float deltaTime, Grid& grid) {
     this->deltaTime = deltaTime;
@@ -61,26 +61,26 @@ bool ChasePlayerAction::CanExecute() {
 }
 
 void ChasePlayerAction::Execute() {
-	std::cout << player.getisAlive() << std::endl;
+	cout << player.getisAlive() << endl;
     if (!ally) {
-        std::cout << "Error: ChasePlayerAction has a null ally reference!\n";
+        cout << "Error: ChasePlayerAction has a null ally reference!\n";
         return;
     }
 
-    sf::Vector2f playerPos = player.getPosition();
-    sf::Vector2f allyPos = ally->shape.getPosition();
+    Vector2f playerPos = player.getPosition();
+    Vector2f allyPos = ally->shape.getPosition();
     float deltaTime = ally->deltaTime;
 
     const float MIN_DISTANCE = 20.0f;  // Minimum distance from Player
     const float MAX_DISTANCE = 50.0f; // Max distance before moving in
 
-    float distance = std::sqrt(std::pow(playerPos.x - allyPos.x, 2) + std::pow(playerPos.y - allyPos.y, 2));
+    float distance = sqrt(pow(playerPos.x - allyPos.x, 2) + pow(playerPos.y - allyPos.y, 2));
 
     if (distance > MAX_DISTANCE) {
         // Too far? Move closer.
         ally->setClosePlayer(false);
-        sf::Vector2f direction = playerPos - allyPos;
-        float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+        Vector2f direction = playerPos - allyPos;
+        float length = sqrt(direction.x * direction.x + direction.y * direction.y);
         if (length > 0) direction /= length;
 
         ally->shape.move(direction * Ally::SPEED * deltaTime);
@@ -88,8 +88,8 @@ void ChasePlayerAction::Execute() {
     else if (distance < MIN_DISTANCE) {
 		ally->setClosePlayer(true);
         // Too close? Push away from the Player.
-        sf::Vector2f direction = allyPos - playerPos; // Reverse direction
-        float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+        Vector2f direction = allyPos - playerPos; // Reverse direction
+        float length = sqrt(direction.x * direction.x + direction.y * direction.y);
         if (length > 0) direction /= length;
 
         ally->shape.move(direction * Ally::SPEED * deltaTime);
@@ -106,21 +106,21 @@ bool RevivePlayerAction::CanExecute() {
 
 void RevivePlayerAction::Execute() {
     if (!ally) {
-        std::cout << "Error: RevivePlayerAction has a null ally reference!\n";
+        cout << "Error: RevivePlayerAction has a null ally reference!\n";
         return;
     }
 
-    sf::Vector2f playerPos = player.getPosition();
-    sf::Vector2f allyPos = ally->shape.getPosition();
+    Vector2f playerPos = player.getPosition();
+    Vector2f allyPos = ally->shape.getPosition();
     float deltaTime = ally->deltaTime;
 
-    float distance = std::sqrt(std::pow(playerPos.x - allyPos.x, 2) + std::pow(playerPos.y - allyPos.y, 2));
+    float distance = sqrt(pow(playerPos.x - allyPos.x, 2) + pow(playerPos.y - allyPos.y, 2));
     const float MIN_DISTANCE = 45.0f;
 
     if (distance > MIN_DISTANCE) {
-        std::cout << "Moving closer to revive Player...\n";
-        sf::Vector2f direction = playerPos - allyPos;
-        float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+        cout << "Moving closer to revive Player...\n";
+        Vector2f direction = playerPos - allyPos;
+        float length = sqrt(direction.x * direction.x + direction.y * direction.y);
         if (length > 0) direction /= length;
 
         ally->shape.move(direction * Ally::SPEED * deltaTime);
@@ -136,21 +136,21 @@ void RevivePlayerAction::Execute() {
     float progress = ally->getReviveProgress();
     if (static_cast<int>(progress * 5) % 2 == 0) {
         ally->shape.setOutlineThickness(3);
-        ally->shape.setOutlineColor(sf::Color::Black);
+        ally->shape.setOutlineColor(Color::Black);
     }
     else {
-        ally->shape.setFillColor(sf::Color::Yellow);
+        ally->shape.setFillColor(Color::Yellow);
         ally->shape.setOutlineThickness(3);
-        ally->shape.setOutlineColor(sf::Color::White);
+        ally->shape.setOutlineColor(Color::White);
     }
 
     // If revival is complete, bring the player back
     if (ally->isRevivalComplete()) {
-        std::cout << "Player revived!\n";
+        cout << "Player revived!\n";
         player.setIsAlive(true);
         ally->resetReviveProgress();
         ally->shape.setOutlineThickness(0);
-        ally->shape.setFillColor(sf::Color::Yellow);
+        ally->shape.setFillColor(Color::Yellow);
     }
 }
 
@@ -168,27 +168,27 @@ bool DefendPlayerAction::CanExecute() {
 
 void DefendPlayerAction::Execute() {
     if (!ally) {
-        std::cout << "Error: DefendPlayerAction has a null ally reference!\n";
+        cout << "Error: DefendPlayerAction has a null ally reference!\n";
         return;
     }
 
-    sf::Vector2f playerPos = player.getPosition();
-    sf::Vector2f enemyPos = player.getNearestEnemyPosition();
-    sf::Vector2f allyPos = ally->shape.getPosition();
+    Vector2f playerPos = player.getPosition();
+    Vector2f enemyPos = player.getNearestEnemyPosition();
+    Vector2f allyPos = ally->shape.getPosition();
     float deltaTime = ally->deltaTime;
 
-    if (enemyPos == sf::Vector2f(0.f, 0.f)) {
-        std::cout << "No enemy found, cannot defend!\n";
+    if (enemyPos == Vector2f(0.f, 0.f)) {
+        cout << "No enemy found, cannot defend!\n";
         return;
     }
 
-    sf::Vector2f defendPosition = playerPos + (enemyPos - playerPos) * 0.35f;
+    Vector2f defendPosition = playerPos + (enemyPos - playerPos) * 0.35f;
 
     const float MIN_DISTANCE = 20.0f;
     const float MAX_DISTANCE = 20.0f;
 
-    sf::Vector2f direction = defendPosition - allyPos;
-    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+    Vector2f direction = defendPosition - allyPos;
+    float length = sqrt(direction.x * direction.x + direction.y * direction.y);
 
     if (length > MAX_DISTANCE) {
         // Move closer
@@ -198,7 +198,7 @@ void DefendPlayerAction::Execute() {
     else if (length < MIN_DISTANCE) {
         // Move away slightly
         direction = allyPos - playerPos;
-        length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+        length = sqrt(direction.x * direction.x + direction.y * direction.y);
         if (length > 0) direction /= length;
 
         ally->shape.move(direction * Ally::SPEED * deltaTime);
@@ -211,8 +211,8 @@ bool DeathAction::CanExecute(){
 }
 
 void DeathAction::Execute() {
-    std::cout << "Ally has died. No further actions can be taken.\n";
-    ally->shape.setFillColor(sf::Color(130, 175, 130));; // Change color to indicate death
+    cout << "Ally has died. No further actions can be taken.\n";
+    ally->shape.setFillColor(Color(130, 175, 130));; // Change color to indicate death
     ally->shape.setOutlineThickness(0);
 }
 
@@ -223,8 +223,8 @@ void DeathAction::Execute() {
 // GOAPPlanner
 GOAPPlanner::GOAPPlanner() {}
 
-std::vector<Action*> GOAPPlanner::Plan(Goal goal, Ally* ally) {
-    std::vector<Action*> plan;
+vector<Action*> GOAPPlanner::Plan(Goal goal, Ally* ally) {
+    vector<Action*> plan;
 
     if (goal == Goal::Revive) {
         plan.push_back(new RevivePlayerAction(ally));
@@ -239,7 +239,7 @@ std::vector<Action*> GOAPPlanner::Plan(Goal goal, Ally* ally) {
 		plan.push_back(new DeathAction(ally));
 	}
     else {
-        std::cout << "Error: Unknown goal\n";
+        cout << "Error: Unknown goal\n";
     }
     return plan;
 }
@@ -266,6 +266,7 @@ void GOAPAgent::PerformActions() {
 		UpdateGoal(Goal::Death);
 	}
     else if (player.getIsEnemyNear() && player.getisAlive()) {
+        cout << endl << endl << endl << "wrar :3" << endl << endl << endl;
         UpdateGoal(Goal::Defend);
     }
     else if (!player.getisAlive()) {
@@ -281,11 +282,14 @@ void GOAPAgent::PerformActions() {
             action->Execute();
         }
         else {
-            std::cout << "Action impossible: " << typeid(*action).name() << "\n";
+            cout << "Action impossible: " << typeid(*action).name() << "\n";
         }
     }
 }
 
-std::vector<Action*> GOAPAgent::getPlan() {
+vector<Action*> GOAPAgent::getPlan() {
     return plan;
 }
+
+
+vector<Ally> allies = { Ally(100, 100) };

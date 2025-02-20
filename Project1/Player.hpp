@@ -10,7 +10,7 @@ class Enemy;
 
 class Player : public Entity {
 private:
-    const std::vector<std::unique_ptr<Enemy>>* enemyListPtr = nullptr;  // Store pointer to unique_ptr vector
+    vector<vector<shared_ptr<Enemy>>*> enemyListPtr = {};  // Store pointer to unique_ptr vector
 
     bool isAlive = true;
     bool enemyNear = false;
@@ -19,14 +19,14 @@ private:
 public:
     Player(float x, float y);
     void update(float deltaTime, Grid& grid) override;
-    sf::Vector2f getPosition();
+    Vector2f getPosition();
     bool getisAlive();
 	void setIsAlive(bool alive);
     bool getIsEnemyNear();
 
-    void checkForEnemies(const std::vector<std::unique_ptr<Enemy>>& enemies);
+    bool checkForEnemies(vector<shared_ptr<Enemy>>& enemies, vector<shared_ptr<Enemy>>& BTenemies);
 
-    sf::Vector2f getNearestEnemyPosition();
+    Vector2f getNearestEnemyPosition();
 
 };
 

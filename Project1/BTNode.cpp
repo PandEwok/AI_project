@@ -1,8 +1,8 @@
 #include "BTNode.hpp"
 #include "Pathfinding.hpp"
 
-void SequenceNode::AddChild(std::unique_ptr<BTNode> child) {
-    children.push_back(std::move(child));
+void SequenceNode::AddChild(unique_ptr<BTNode> child) {
+    children.push_back(move(child));
 }
 
 NodeState SequenceNode::execute() {
@@ -14,8 +14,8 @@ NodeState SequenceNode::execute() {
     return NodeState::SUCCESS;
 }
 
-void SelectorNode::AddChild(std::unique_ptr<BTNode> child) {
-    children.push_back(std::move(child));
+void SelectorNode::AddChild(unique_ptr<BTNode> child) {
+    children.push_back(move(child));
 }
 
 NodeState SelectorNode::execute() {
@@ -27,11 +27,11 @@ NodeState SelectorNode::execute() {
     return NodeState::FAILURE;
 }
 
-void Blackboard::SetValue(const std::string& key, int value) {
+void Blackboard::SetValue(const string& key, int value) {
     data[key] = value;
 }
 
-int Blackboard::GetValue(const std::string& key) {
+int Blackboard::GetValue(const string& key) {
     return data[key];
 }
 
@@ -40,7 +40,7 @@ NodeState ConditionNode::execute() {
 }
 
 NodeState ActionNode::execute() {
-    std::cout << "Action: " << actionName << std::endl;
+    cout << "Action: " << actionName << endl;
     return NodeState::SUCCESS;
 }
 
@@ -57,8 +57,8 @@ NodeState FollowActionNode::execute() {
         self.currentWaypoint = self.waypoints.size() - 1;
     }
 
-    sf::Vector2i goingTo = self.waypoints[self.currentWaypoint];
-    sf::Vector2f direction = Vector2f(goingTo) - self.shape.getPosition();
+    Vector2i goingTo = self.waypoints[self.currentWaypoint];
+    Vector2f direction = Vector2f(goingTo) - self.shape.getPosition();
     float distance = sqrt(direction.x * direction.x + direction.y * direction.y);
     direction = normalize(direction);
 

@@ -7,12 +7,12 @@ class Entity {
 public:
     RectangleShape shape;
     float SPEED = 180.0f;
-    sf::Vector2f velocity;
+    Vector2f velocity;
     vector<Vector2i> waypoints = {};
     int currentWaypoint = 0;
     int waypointChange = 1;
 
-    Entity(float x, float y, sf::Color color);
+    Entity(float x, float y, Color color);
     virtual void update(float deltaTime, Grid& grid) = 0;
 };
 

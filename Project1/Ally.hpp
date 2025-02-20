@@ -1,5 +1,4 @@
-#ifndef ALLY_HPP
-#define ALLY_HPP
+#pragma once
 
 #include "Entity.hpp"
 #include "Player.hpp"
@@ -14,7 +13,7 @@ private:
     bool isReviving = false;
 
 public:
-    static constexpr float SPEED = 75.0f;
+    static constexpr float SPEED = 800.0f;
     static constexpr float REVIVE_TIME = 3.0f;  // 3 seconds to revive
     float deltaTime = 0.0f;
 
@@ -88,7 +87,7 @@ enum class Goal {
 class GOAPPlanner {
 public:
     GOAPPlanner();
-    std::vector<Action*> Plan(Goal goal, Ally* ally);
+    vector<Action*> Plan(Goal goal, Ally* ally);
 };
 
 class GOAPAgent {
@@ -96,14 +95,15 @@ public:
     Goal goal;
     GOAPPlanner planner;
     Ally* owner;
-    std::vector<Action*> plan;
+    vector<Action*> plan;
 
     GOAPAgent(Ally* ally);
 
     void UpdateGoal(Goal newGoal);
     void UpdatePlan();
     void PerformActions();
-    std::vector<Action*> getPlan();
+    vector<Action*> getPlan();
 };
 
-#endif // ALLY_HPP
+
+extern vector<Ally> allies;

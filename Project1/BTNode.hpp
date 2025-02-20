@@ -14,46 +14,46 @@ public:
 
 class SequenceNode : public BTNode {
 private:
-    std::vector<std::unique_ptr<BTNode>> children;
+    vector<unique_ptr<BTNode>> children;
 public:
-    void AddChild(std::unique_ptr<BTNode> child);
+    void AddChild(unique_ptr<BTNode> child);
     NodeState execute() override;
 };
 
 
 class SelectorNode : public BTNode {
 private:
-    std::vector<std::unique_ptr<BTNode>> children;
+    vector<unique_ptr<BTNode>> children;
 public:
-    void AddChild(std::unique_ptr<BTNode> child);
+    void AddChild(unique_ptr<BTNode> child);
     NodeState execute() override;
 };
 
 
 class Blackboard {
 private:
-    std::unordered_map<std::string, int> data;
+    unordered_map<string, int> data;
 public:
-    void SetValue(const std::string& key, int value);
-    int GetValue(const std::string& key);
+    void SetValue(const string& key, int value);
+    int GetValue(const string& key);
 };
 
 
 class ConditionNode : public BTNode {
 private:
     Blackboard& blackboard;
-    std::string key;
+    string key;
     int expectedValue;
 public:
-    ConditionNode(Blackboard& bb, const std::string& key, int value) : blackboard(bb), key(key), expectedValue(value) {}
+    ConditionNode(Blackboard& bb, const string& key, int value) : blackboard(bb), key(key), expectedValue(value) {}
     NodeState execute() override;
 };
 
 class ActionNode : public BTNode {
 private:
-    std::string actionName;
+    string actionName;
 public:
-    ActionNode(std::string name) : actionName(name) {}
+    ActionNode(string name) : actionName(name) {}
     NodeState execute() override;
 };
 

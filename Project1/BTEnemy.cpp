@@ -25,6 +25,16 @@ BTEnemy::BTEnemy(float x, float y) : Enemy(x,y)
 
 void BTEnemy::update(float deltaTime, Grid& grid)
 {
+	checkForAllyCollision(allies);   // Ensure big enemies also get stunned
+
+	if (isStunned()) {
+		shape.setFillColor(Color(70, 70, 70));
+		shape.setOutlineColor(Color::Red);
+		shape.setOutlineThickness(2);
+		waypoints.clear();
+		return;
+	}
+
 	root->execute();
 	if (abs(player.shape.getPosition().x - shape.getPosition().x) <= attackRange and abs(player.shape.getPosition().y - shape.getPosition().y) <= attackRange) {
 		blackboard.SetValue("InRange", 1);

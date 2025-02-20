@@ -12,18 +12,15 @@
 int main() {
     window.setFramerateLimit(60);
 
-
-    std::vector<Ally> allies = { Ally(100, 100)};
-    std::vector<std::unique_ptr<Enemy>> enemies;
-    enemies.push_back(std::make_unique<BigEnemy>(600, 300)); // Big enemy
-    vector<Enemy> enemies = { Enemy(100, 100) };
-    vector<shared_ptr<BTEnemy>> BTenemies;
+    vector<shared_ptr<Enemy>> enemies;
+    enemies.push_back(make_shared<BigEnemy>(600, 300)); // Big enemy
+    vector<shared_ptr<Enemy>> BTenemies;
     BTenemies.push_back(make_shared<BTEnemy>(700, 100));
-    
+
     grid.loadFromFile("map.txt");
 
     // Create a GOAPAgent for each Ally and store them in a vector
-    std::vector<GOAPAgent> allyAgents;
+    vector<GOAPAgent> allyAgents;
     for (auto& ally : allies) {
         allyAgents.emplace_back(&ally); // Pass each ally to its GOAPAgent
     }
@@ -31,24 +28,24 @@ int main() {
     Vector2i pos1 = Vector2i(-1, -1);
     Vector2i pos2 = Vector2i(-1, -1);
 
-    sf::Clock clock;
+    Clock clock;
 
     while (window.isOpen()) {
-        sf::Time dt = clock.restart();
+        Time dt = clock.restart();
         deltaTime = dt.asSeconds();
 
-        sf::Event event;
+        Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+            if (event.type == Event::Closed)
             {
                 window.close();
             }
-            else if (event.type == sf::Event::MouseButtonPressed) {
+            else if (event.type == Event::MouseButtonPressed) {
                 if (Mouse::isButtonPressed(Mouse::Right)) {
                     if (pos1 == Vector2i(-1, -1)) {
                         pos1 = Mouse::getPosition(window) / CELL_SIZE;
                         if (grid.getCell(pos1.x, pos1.y).walkable) {
-                            grid.getCell(pos1.x, pos1.y).shape.setFillColor(Color::Blue - Color(0,0,0, 100));
+                            grid.getCell(pos1.x, pos1.y).shape.setFillColor(Color::Blue - Color(0, 0, 0, 100));
                         }
                         else {
                             pos1 = Vector2i(-1, -1);
@@ -81,11 +78,12 @@ int main() {
         }
 
         player.update(deltaTime, grid);
-        player.checkForEnemies(enemies);  // Check if enemies are nearby
+        player.checkForEnemies(enemies, BTenemies);  // Check if enemies are nearby
+
         for (auto& enemy : enemies) {
             BigEnemy* bigEnemy = dynamic_cast<BigEnemy*>(enemy.get());
             if (bigEnemy) {
-                bigEnemy->update(deltaTime, grid, allies);  // Pass allies to BigEnemy
+                bigEnemy->update(deltaTime, grid);  // Pass allies to BigEnemy
             }
             else {
                 enemy->update(deltaTime, grid);  // Normal enemies update as usual
@@ -102,17 +100,18 @@ int main() {
             agent.PerformActions();
         }
 
-
-
         for (auto& enemy : BTenemies) {
             enemy->update(deltaTime, grid);
         }
 
         window.clear();
         grid.draw(window);
-        
+
         for (const auto& enemy : enemies) {
             window.draw(enemy->shape);
+            RectangleShape rect(Vector2f(1, 1));
+            rect.setPosition(enemy->shape.getPosition());
+            window.draw(rect);
         }
         for (const auto& enemy : BTenemies) {
             for (Vector2i pos : enemy->waypoints) {
@@ -128,8 +127,6 @@ int main() {
             window.draw(rect);
         }
         window.draw(player.shape);
-        for (const auto& enemy : enemies)
-            window.draw(enemy->shape);
         for (const auto& ally : allies)
             window.draw(ally.shape);
         window.display();

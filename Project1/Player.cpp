@@ -2,24 +2,24 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <cmath>
 
-Player::Player(float x, float y) : Entity(x, y, sf::Color::Blue) { SPEED = 250.0f; }
+Player::Player(float x, float y) : Entity(x, y, Color::Blue) { SPEED = 250.0f; }
 
 void Player::update(float deltaTime, Grid& grid) {
 
     if (isAlive) {
-        shape.setFillColor(sf::Color::Blue);
+        shape.setFillColor(Color::Blue);
 		shape.setOutlineThickness(0);
 
-        sf::Vector2f movement(0.f, 0.f);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) movement.y -= SPEED * deltaTime;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) movement.y += SPEED * deltaTime;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) movement.x -= SPEED * deltaTime;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) movement.x += SPEED * deltaTime;
+        Vector2f movement(0.f, 0.f);
+        if (Keyboard::isKeyPressed(Keyboard::Z)) movement.y -= SPEED * deltaTime;
+        if (Keyboard::isKeyPressed(Keyboard::S)) movement.y += SPEED * deltaTime;
+        if (Keyboard::isKeyPressed(Keyboard::Q)) movement.x -= SPEED * deltaTime;
+        if (Keyboard::isKeyPressed(Keyboard::D)) movement.x += SPEED * deltaTime;
         //DEBUG
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) isAlive = !isAlive;
+        if (Keyboard::isKeyPressed(Keyboard::Up)) isAlive = !isAlive;
 
-    sf::Vector2f newPosition = shape.getPosition() - shape.getSize()/2.f + movement;
-    sf::FloatRect newBounds(newPosition, shape.getSize());
+    Vector2f newPosition = shape.getPosition() - shape.getSize()/2.f + movement;
+    FloatRect newBounds(newPosition, shape.getSize());
 
         auto isWalkable = [&](float x, float y) {
             int gridX = static_cast<int>(x / CELL_SIZE);
@@ -36,31 +36,38 @@ void Player::update(float deltaTime, Grid& grid) {
     }
     else if (!isAlive) {
         //DEBUG
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) isAlive = !isAlive;
+        if (Keyboard::isKeyPressed(Keyboard::Down)) isAlive = !isAlive;
 
 
-        shape.setFillColor(sf::Color(155, 155, 160));
-        shape.setOutlineColor(sf::Color::Blue);
+        shape.setFillColor(Color(155, 155, 160));
+        shape.setOutlineColor(Color::Blue);
         shape.setOutlineThickness(3);
     }
 }
 
-void Player::checkForEnemies(const std::vector<std::unique_ptr<Enemy>>& enemies) {
+bool Player::checkForEnemies(vector<shared_ptr<Enemy>>& enemies, vector<shared_ptr<Enemy>>& BTenemies) {
     enemyNear = false;  // Reset flag
-    enemyListPtr = &enemies;  // Store pointer to unique_ptr vector
+    enemyListPtr.clear();
+    enemyListPtr.push_back(&enemies);
+    enemyListPtr.push_back(&BTenemies);
 
-    for (const auto& enemy : enemies) {  // Iterate using unique_ptr
-        float distance = std::sqrt(
-            std::pow(enemy->shape.getPosition().x - shape.getPosition().x, 2) +
-            std::pow(enemy->shape.getPosition().y - shape.getPosition().y, 2)
-        );
+    for (auto& enemyList : enemyListPtr) {
+        for (auto& enemy : *enemyList) {  // Iterate using unique_ptr
+            if (enemy->isStunned()) { continue; }
+            float distance = sqrt(
+                pow(enemy->shape.getPosition().x - shape.getPosition().x, 2) +
+                pow(enemy->shape.getPosition().y - shape.getPosition().y, 2)
+            );
 
-        if (distance <= DETECTION_RADIUS) {
-            enemyNear = true;
-            std::cout << "Enemy detected!\n";
-            return;  // Stop checking after detecting one enemy
+            if (distance <= DETECTION_RADIUS) {
+                enemyNear = true;
+                cout << "Enemy detected!\n";
+                return enemyNear;  // Stop checking after detecting one enemy
+            }
         }
     }
+
+    return enemyNear;
 }
 
 
@@ -69,24 +76,27 @@ void Player::setIsAlive(bool alive) {
 	isAlive = alive;
 }
 
-sf::Vector2f Player::getNearestEnemyPosition() {
-    if (!enemyListPtr) {
-        std::cout << "Error: No enemy list available!\n";
-        return sf::Vector2f(0.f, 0.f);
+Vector2f Player::getNearestEnemyPosition() {
+    if (enemyListPtr.empty()) {
+        cout << "Error: No enemy list available!\n";
+        return Vector2f(0.f, 0.f);
     }
 
-    sf::Vector2f nearestEnemyPos;
-    float minDistance = std::numeric_limits<float>::max();
+    Vector2f nearestEnemyPos;
+    float minDistance = numeric_limits<float>::max();
 
-    for (const auto& enemy : *enemyListPtr) {  // Iterate properly with unique_ptr
-        float distance = std::sqrt(
-            std::pow(enemy->shape.getPosition().x - shape.getPosition().x, 2) +
-            std::pow(enemy->shape.getPosition().y - shape.getPosition().y, 2)
-        );
+    for (auto& enemyList : enemyListPtr) {
+        for (const auto& enemy : *enemyList) {  // Iterate properly with unique_ptr
+            if (enemy->isStunned()) { continue; }
+            float distance = sqrt(
+                pow(enemy->shape.getPosition().x - shape.getPosition().x, 2) +
+                pow(enemy->shape.getPosition().y - shape.getPosition().y, 2)
+            );
 
-        if (distance < minDistance) {
-            minDistance = distance;
-            nearestEnemyPos = enemy->shape.getPosition();
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestEnemyPos = enemy->shape.getPosition();
+            }
         }
     }
 
@@ -97,7 +107,7 @@ sf::Vector2f Player::getNearestEnemyPosition() {
 
 
 
-sf::Vector2f Player::getPosition() {
+Vector2f Player::getPosition() {
     return shape.getPosition();
 }
 

@@ -1,8 +1,6 @@
-#ifndef BIGENEMY_HPP
-#define BIGENEMY_HPP
+#pragma once
 
 #include "Enemy.hpp"
-#include <vector>
 
 class BigEnemy : public Enemy {
 private:
@@ -12,7 +10,5 @@ public:
     BigEnemy(float x, float y);
 
     // BigEnemy extends update to check for allies
-    void update(float deltaTime, Grid& grid, std::vector<Ally>& allies);
+    void update(float deltaTime, Grid& grid);
 };
-
-#endif

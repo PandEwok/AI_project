@@ -2,14 +2,14 @@
 #include <iostream>
 #include <cmath>
 
-Enemy::Enemy(float x, float y) : Entity(x, y, sf::Color::Red) {}
+Enemy::Enemy(float x, float y) : Entity(x, y, Color::Red) {}
 
 void Enemy::update(float deltaTime, Grid& grid) {
     if (stunTimer > 0) {
         stunTimer -= deltaTime;
 
         if (static_cast<int>(stunTimer * 5) % 2 == 0) {
-            shape.setOutlineColor(sf::Color::Green);
+            shape.setOutlineColor(Color::Green);
             shape.setOutlineThickness(3);
         }
         else {
@@ -18,7 +18,7 @@ void Enemy::update(float deltaTime, Grid& grid) {
 
         if (stunTimer <= 0) {
             shape.setOutlineThickness(0);
-            shape.setFillColor(sf::Color::Red);
+            shape.setFillColor(Color::Red);
         }
 
         return;
@@ -27,15 +27,15 @@ void Enemy::update(float deltaTime, Grid& grid) {
     // Default enemy movement logic can be added here (if needed)
 }
 
-void Enemy::checkForAllyCollision(std::vector<Ally>& allies) {
+void Enemy::checkForAllyCollision(vector<Ally>& allies) {
     for (auto& ally : allies) {
         if (shape.getGlobalBounds().intersects(ally.shape.getGlobalBounds())) {
             if (ally.getisReviving()) {
-                std::cout << "Ally was killed while reviving!\n";
+                cout << "Ally was killed while reviving!\n";
                 ally.setAllyAlive(false);  // Kill the ally
             }
             else {
-                std::cout << "Enemy stunned by Ally!\n";
+                cout << "Enemy stunned by Ally!\n";
                 stunTimer = STUN_DURATION;
             }
             return;
