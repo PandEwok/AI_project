@@ -1,9 +1,27 @@
 ﻿  Ally.cpp
-C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Ally.cpp(63,20): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
-C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Ally.cpp(68,22): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Ally.cpp(77,20): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Ally.cpp(117,20): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+  BigEnemy.cpp
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\BigEnemy.cpp(18,20): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+  Enemy.cpp
+  main.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\memory(3597,56): warning C4244: 'argument' : conversion de '_Ty' en 'float', perte possible de données
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\memory(3597,56): warning C4244:         with
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\memory(3597,56): warning C4244:         [
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\memory(3597,56): warning C4244:             _Ty=int
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\memory(3597,56): warning C4244:         ]
+  (compiler le fichier source 'main.cpp')
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\memory(3597,56):
+      le contexte d’instanciation du modèle (le plus ancien) est
+          C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\main.cpp(21,28):
+          voir la référence à l'instanciation de la fonction modèle 'std::unique_ptr<Enemy,std::default_delete<Enemy>> std::make_unique<Enemy,int,int,0>(int &&,int &&)' en cours de compilation
+  
+  Player.cpp
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Player.cpp(54,24): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Player.cpp(83,24): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
   Génération de code en cours
-  3 of 536 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    2 functions had inline decision re-evaluated but remain unchanged
+  12 of 591 functions ( 2.0%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
   Fin de la génération du code
   Project1.vcxproj -> C:\Users\jtranhuu\source\repos\PandEwok\AI_project\x64\Release\Project1.exe

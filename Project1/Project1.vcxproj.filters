@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\Enemies.hpp">
+      <UniqueIdentifier>{9a11962d-8389-4243-8b2b-f91f5b9aab2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Enemies.cpp">
+      <UniqueIdentifier>{0562464e-07c8-46e5-9d55-11d328a95b8d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -24,14 +30,17 @@
     <ClCompile Include="Player.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="Grid.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="Ally.cpp">
       <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Fichiers sources\Enemies.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="BigEnemy.cpp">
+      <Filter>Fichiers sources\Enemies.cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,14 +50,17 @@
     <ClInclude Include="Player.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.hpp">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="Grid.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Ally.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.hpp">
+      <Filter>Fichiers d%27en-tête\Enemies.hpp</Filter>
+    </ClInclude>
+    <ClInclude Include="BigEnemy.hpp">
+      <Filter>Fichiers d%27en-tête\Enemies.hpp</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

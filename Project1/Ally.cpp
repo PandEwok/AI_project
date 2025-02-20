@@ -41,7 +41,17 @@ float Ally::getReviveProgress() {
 	return reviveProgress;
 }
 
+bool Ally::getisReviving() {
+	return isReviving;
+}
 
+bool Ally::isAllyAlive() {
+	return isAlive;
+}
+
+void Ally::setAllyAlive(bool alive) {
+	isAlive = alive;
+}
 
 // ChasePlayerAction
 ChasePlayerAction::ChasePlayerAction(Ally* ally) : ally(ally) {}
@@ -51,6 +61,7 @@ bool ChasePlayerAction::CanExecute() {
 }
 
 void ChasePlayerAction::Execute() {
+	std::cout << player.getisAlive() << std::endl;
     if (!ally) {
         std::cout << "Error: ChasePlayerAction has a null ally reference!\n";
         return;
@@ -60,23 +71,32 @@ void ChasePlayerAction::Execute() {
     sf::Vector2f allyPos = ally->shape.getPosition();
     float deltaTime = ally->deltaTime;
 
+    const float MIN_DISTANCE = 20.0f;  // Minimum distance from Player
+    const float MAX_DISTANCE = 50.0f; // Max distance before moving in
+
     float distance = std::sqrt(std::pow(playerPos.x - allyPos.x, 2) + std::pow(playerPos.y - allyPos.y, 2));
-    if (distance > 75) {
+
+    if (distance > MAX_DISTANCE) {
+        // Too far? Move closer.
         ally->setClosePlayer(false);
         sf::Vector2f direction = playerPos - allyPos;
-
-        float length = std::sqrt(std::pow(direction.x, 2) + std::pow(direction.y, 2));
-        if (length > 0) {
-            direction.x /= length;
-            direction.y /= length;
-        }
+        float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+        if (length > 0) direction /= length;
 
         ally->shape.move(direction * Ally::SPEED * deltaTime);
     }
-    else
-        ally->setClosePlayer(true);
+    else if (distance < MIN_DISTANCE) {
+		ally->setClosePlayer(true);
+        // Too close? Push away from the Player.
+        sf::Vector2f direction = allyPos - playerPos; // Reverse direction
+        float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+        if (length > 0) direction /= length;
 
+        ally->shape.move(direction * Ally::SPEED * deltaTime);
+    }
 }
+
+
 
 RevivePlayerAction::RevivePlayerAction(Ally* ally) : ally(ally) {}
 
@@ -94,47 +114,46 @@ void RevivePlayerAction::Execute() {
     sf::Vector2f allyPos = ally->shape.getPosition();
     float deltaTime = ally->deltaTime;
 
-    // Step 1: Move toward the player first (reuse ChasePlayerAction logic)
-    ChasePlayerAction chase(ally);
-    if (!ally->getClosePlayer()) {
-        chase.Execute();  // Move toward the player
-        return;
+    float distance = std::sqrt(std::pow(playerPos.x - allyPos.x, 2) + std::pow(playerPos.y - allyPos.y, 2));
+    const float MIN_DISTANCE = 45.0f;
+
+    if (distance > MIN_DISTANCE) {
+        std::cout << "Moving closer to revive Player...\n";
+        sf::Vector2f direction = playerPos - allyPos;
+        float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+        if (length > 0) direction /= length;
+
+        ally->shape.move(direction * Ally::SPEED * deltaTime);
+        return; // Don't start reviving yet!
     }
 
-    // Step 2: Start revival process
+    // If close enough, start reviving
+    ally->setClosePlayer(true);
     ally->startReviving();
+    ally->setReviveProgress(ally->getReviveProgress() + deltaTime);
 
-    // Step 3: Progress revive timer if not interrupted
-    //if (!player.getIsEnemyNear()) {
-        ally->setReviveProgress(ally->getReviveProgress() + deltaTime);
+    // Flash color effect
+    float progress = ally->getReviveProgress();
+    if (static_cast<int>(progress * 5) % 2 == 0) {
+        ally->shape.setOutlineThickness(3);
+        ally->shape.setOutlineColor(sf::Color::Black);
+    }
+    else {
+        ally->shape.setFillColor(sf::Color::Yellow);
+        ally->shape.setOutlineThickness(3);
+        ally->shape.setOutlineColor(sf::Color::White);
+    }
 
-        // Flash color to indicate revival
-        float progress = ally->getReviveProgress();
-        if (static_cast<int>(progress * 5) % 2 == 0) {
-            ally->shape.setOutlineThickness(3);
-			ally->shape.setOutlineColor(sf::Color::Black);
-        }
-        else {
-            ally->shape.setFillColor(sf::Color::Yellow);
-            ally->shape.setOutlineThickness(3);
-            ally->shape.setOutlineColor(sf::Color::White);
-        }
-
-    //}
-    //else {
-    //    ally->stopReviving(); // Pauses revive but does not reset progress
-    //}
-
-    // Step 4: If 3 seconds passed, revive the player
+    // If revival is complete, bring the player back
     if (ally->isRevivalComplete()) {
-        //player.revive();  // Implement this function in `Player`
         std::cout << "Player revived!\n";
         player.setIsAlive(true);
         ally->resetReviveProgress();
         ally->shape.setOutlineThickness(0);
-        ally->shape.setFillColor(sf::Color::Yellow);  // Reset color
+        ally->shape.setFillColor(sf::Color::Yellow);
     }
 }
+
 
 
 
@@ -158,24 +177,46 @@ void DefendPlayerAction::Execute() {
     sf::Vector2f allyPos = ally->shape.getPosition();
     float deltaTime = ally->deltaTime;
 
-    // Ensure we have a valid enemy position
     if (enemyPos == sf::Vector2f(0.f, 0.f)) {
         std::cout << "No enemy found, cannot defend!\n";
         return;
     }
 
-    // Calculate the correct defend position BETWEEN player and enemy
-    sf::Vector2f defendPosition = playerPos + (enemyPos - playerPos) * 0.35f;  // Midpoint
+    sf::Vector2f defendPosition = playerPos + (enemyPos - playerPos) * 0.35f;
 
-    // Move ally towards defendPosition
+    const float MIN_DISTANCE = 20.0f;
+    const float MAX_DISTANCE = 20.0f;
+
     sf::Vector2f direction = defendPosition - allyPos;
     float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-    if (length > 0) {
-        direction /= length;  // Normalize direction
-    }
 
-    ally->shape.move(direction * Ally::SPEED * deltaTime);
+    if (length > MAX_DISTANCE) {
+        // Move closer
+        direction /= length;
+        ally->shape.move(direction * Ally::SPEED * deltaTime);
+    }
+    else if (length < MIN_DISTANCE) {
+        // Move away slightly
+        direction = allyPos - playerPos;
+        length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+        if (length > 0) direction /= length;
+
+        ally->shape.move(direction * Ally::SPEED * deltaTime);
+    }
 }
+
+DeathAction::DeathAction(Ally* ally) : ally(ally) {}
+bool DeathAction::CanExecute(){
+    return !ally->isAllyAlive(); // Execute only if the ally is dead
+}
+
+void DeathAction::Execute() {
+    std::cout << "Ally has died. No further actions can be taken.\n";
+    ally->shape.setFillColor(sf::Color(130, 175, 130));; // Change color to indicate death
+    ally->shape.setOutlineThickness(0);
+}
+
+
 
 
 
@@ -185,15 +226,18 @@ GOAPPlanner::GOAPPlanner() {}
 std::vector<Action*> GOAPPlanner::Plan(Goal goal, Ally* ally) {
     std::vector<Action*> plan;
 
-    if (goal == Goal::Chase) {
+    if (goal == Goal::Revive) {
+        plan.push_back(new RevivePlayerAction(ally));
+    }
+    else if (goal == Goal::Chase) {
         plan.push_back(new ChasePlayerAction(ally));
     }
     else if (goal == Goal::Defend) {
         plan.push_back(new DefendPlayerAction(ally));
     }
-    else if (goal == Goal::Revive) {
-		plan.push_back(new RevivePlayerAction(ally));
-    }
+	else if (goal == Goal::Death) {
+		plan.push_back(new DeathAction(ally));
+	}
     else {
         std::cout << "Error: Unknown goal\n";
     }
@@ -217,15 +261,20 @@ void GOAPAgent::UpdatePlan() {
 }
 
 void GOAPAgent::PerformActions() {
-    if (player.getIsEnemyNear() && player.getisAlive()) {
+    
+	if (!owner->isAllyAlive()) {
+		UpdateGoal(Goal::Death);
+	}
+    else if (player.getIsEnemyNear() && player.getisAlive()) {
         UpdateGoal(Goal::Defend);
+    }
+    else if (!player.getisAlive()) {
+        UpdateGoal(Goal::Revive);
     }
     else if (player.getisAlive()) {
         UpdateGoal(Goal::Chase);
     }
-	else if (!player.getisAlive()) {
-		UpdateGoal(Goal::Revive);
-	}
+
 
     for (auto& action : plan) {
         if (action->CanExecute()) {

@@ -8,12 +8,13 @@
 
 class Ally : public Entity {
 private:
+    bool isAlive = true;
     bool closePlayer = false;
     float reviveProgress = 0.0f;  // Time spent reviving
     bool isReviving = false;
 
 public:
-    static constexpr float SPEED = 100.0f;
+    static constexpr float SPEED = 75.0f;
     static constexpr float REVIVE_TIME = 3.0f;  // 3 seconds to revive
     float deltaTime = 0.0f;
 
@@ -27,6 +28,10 @@ public:
     void resetReviveProgress();
 	void setReviveProgress(float reviveProgress);
 	float getReviveProgress();
+
+    bool getisReviving();
+	bool isAllyAlive();
+	void setAllyAlive(bool alive);
 };
 
 
@@ -64,11 +69,20 @@ public:
     void Execute() override;
 };
 
+class DeathAction : public Action {
+private:
+    Ally* ally;
+public:
+    DeathAction(Ally* ally);
+    bool CanExecute() override;
+    void Execute() override;
+};
 
 enum class Goal {
     Chase,
     Revive,
-    Defend
+    Defend,
+    Death
 };
 
 class GOAPPlanner {

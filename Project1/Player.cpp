@@ -46,13 +46,16 @@ void Player::update(float deltaTime, Grid& grid) {
     }
 }
 
-void Player::checkForEnemies(const std::vector<Enemy>& enemies) {
+void Player::checkForEnemies(const std::vector<std::unique_ptr<Enemy>>& enemies) {
     enemyNear = false;  // Reset flag
-    enemyList = &enemies;  // Store reference to enemy list
+    enemyListPtr = &enemies;  // Store pointer to unique_ptr vector
 
-    for (const Enemy& enemy : enemies) {
-        float distance = std::sqrt(std::pow(enemy.shape.getPosition().x - shape.getPosition().x, 2) +
-            std::pow(enemy.shape.getPosition().y - shape.getPosition().y, 2));
+    for (const auto& enemy : enemies) {  // Iterate using unique_ptr
+        float distance = std::sqrt(
+            std::pow(enemy->shape.getPosition().x - shape.getPosition().x, 2) +
+            std::pow(enemy->shape.getPosition().y - shape.getPosition().y, 2)
+        );
+
         if (distance <= DETECTION_RADIUS) {
             enemyNear = true;
             std::cout << "Enemy detected!\n";
@@ -61,12 +64,14 @@ void Player::checkForEnemies(const std::vector<Enemy>& enemies) {
     }
 }
 
+
+
 void Player::setIsAlive(bool alive) {
 	isAlive = alive;
 }
 
 sf::Vector2f Player::getNearestEnemyPosition() {
-    if (!enemyList) {
+    if (!enemyListPtr) {
         std::cout << "Error: No enemy list available!\n";
         return sf::Vector2f(0.f, 0.f);
     }
@@ -74,17 +79,21 @@ sf::Vector2f Player::getNearestEnemyPosition() {
     sf::Vector2f nearestEnemyPos;
     float minDistance = std::numeric_limits<float>::max();
 
-    for (const Enemy& enemy : *enemyList) {
-        float distance = std::sqrt(std::pow(enemy.shape.getPosition().x - shape.getPosition().x, 2) +
-            std::pow(enemy.shape.getPosition().y - shape.getPosition().y, 2));
+    for (const auto& enemy : *enemyListPtr) {  // Iterate properly with unique_ptr
+        float distance = std::sqrt(
+            std::pow(enemy->shape.getPosition().x - shape.getPosition().x, 2) +
+            std::pow(enemy->shape.getPosition().y - shape.getPosition().y, 2)
+        );
+
         if (distance < minDistance) {
             minDistance = distance;
-            nearestEnemyPos = enemy.shape.getPosition();
+            nearestEnemyPos = enemy->shape.getPosition();
         }
     }
 
     return nearestEnemyPos;
 }
+
 
 
 
