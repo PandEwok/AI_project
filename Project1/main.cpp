@@ -6,11 +6,16 @@
 #include "Pathfinding.hpp"
 #include <vector>
 #include "Ally.hpp"
+#include "BigEnemy.hpp"
 
 
 int main() {
     window.setFramerateLimit(60);
 
+
+    std::vector<Ally> allies = { Ally(100, 100)};
+    std::vector<std::unique_ptr<Enemy>> enemies;
+    enemies.push_back(std::make_unique<BigEnemy>(600, 300)); // Big enemy
     vector<Enemy> enemies = { Enemy(100, 100) };
     vector<shared_ptr<BTEnemy>> BTenemies;
     BTenemies.push_back(make_shared<BTEnemy>(700, 100));
@@ -78,8 +83,15 @@ int main() {
         player.update(deltaTime, grid);
         player.checkForEnemies(enemies);  // Check if enemies are nearby
         for (auto& enemy : enemies) {
-            enemy.update(deltaTime, grid);
+            BigEnemy* bigEnemy = dynamic_cast<BigEnemy*>(enemy.get());
+            if (bigEnemy) {
+                bigEnemy->update(deltaTime, grid, allies);  // Pass allies to BigEnemy
+            }
+            else {
+                enemy->update(deltaTime, grid);  // Normal enemies update as usual
+            }
         }
+
         for (auto& ally : allies) {
             ally.update(deltaTime, grid);
         }
@@ -117,7 +129,7 @@ int main() {
         }
         window.draw(player.shape);
         for (const auto& enemy : enemies)
-            window.draw(enemy.shape);
+            window.draw(enemy->shape);
         for (const auto& ally : allies)
             window.draw(ally.shape);
         window.display();

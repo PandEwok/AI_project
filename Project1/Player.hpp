@@ -6,10 +6,12 @@
 #include <vector>
 #include <iostream>
 
+class Enemy;
 
 class Player : public Entity {
 private:
-    const std::vector<Enemy>* enemyList = nullptr;  // Store reference to enemies
+    const std::vector<std::unique_ptr<Enemy>>* enemyListPtr = nullptr;  // Store pointer to unique_ptr vector
+
     bool isAlive = true;
     bool enemyNear = false;
     static constexpr float DETECTION_RADIUS = 250.0f;
@@ -22,7 +24,8 @@ public:
 	void setIsAlive(bool alive);
     bool getIsEnemyNear();
 
-    void checkForEnemies(const std::vector<Enemy>& enemies);
+    void checkForEnemies(const std::vector<std::unique_ptr<Enemy>>& enemies);
+
     sf::Vector2f getNearestEnemyPosition();
 
 };
