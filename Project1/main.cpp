@@ -112,7 +112,7 @@ int main() {
         grid.draw(window);
         
         for (const auto& enemy : enemies) {
-            window.draw(enemy.shape);
+            window.draw(enemy->shape);
         }
         for (const auto& enemy : BTenemies) {
             for (Vector2i pos : enemy->waypoints) {
