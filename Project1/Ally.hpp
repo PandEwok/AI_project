@@ -13,7 +13,7 @@ private:
     bool isReviving = false;
 
 public:
-    static constexpr float SPEED = 800.0f;
+    static constexpr float SPEED = 110.0f;
     static constexpr float REVIVE_TIME = 3.0f;  // 3 seconds to revive
     float deltaTime = 0.0f;
 
