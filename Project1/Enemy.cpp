@@ -4,6 +4,10 @@
 
 Enemy::Enemy(float x, float y) : Entity(x, y, Color::Red) {}
 
+sf::Vector2f Enemy::getPosition(){
+    return shape.getPosition();
+}
+
 void Enemy::update(float deltaTime, Grid& grid) {
     if (stunTimer > 0) {
         stunTimer -= deltaTime;
@@ -24,13 +28,39 @@ void Enemy::update(float deltaTime, Grid& grid) {
         return;
     }
 
-    // Default enemy movement logic can be added here (if needed)
+    if (!player.getisAlive()) {
+        // Player is dead, seek revenge on allies
+        Ally* closestAlly = nullptr;
+        float minDistance = DETECTION_RADIUS; // Set a detection range
+
+        for (auto& ally : allies) {
+            if (!ally.isAllyAlive()) continue; // Skip dead allies
+
+            float distance = std::sqrt(std::pow(ally.shape.getPosition().x - shape.getPosition().x, 2) +
+                std::pow(ally.shape.getPosition().y - shape.getPosition().y, 2));
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestAlly = &ally;
+            }
+        }
+
+        if (closestAlly) {
+            // Move toward the closest ally
+            sf::Vector2f direction = closestAlly->shape.getPosition() - shape.getPosition();
+            float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+            if (length > 0) direction /= length; // Normalize
+
+            shape.move(direction * SPEED * deltaTime);
+        }
+        // Default enemy movement logic can be added here (if needed)
+    }
 }
 
 void Enemy::checkForAllyCollision(vector<Ally>& allies) {
     for (auto& ally : allies) {
         if (shape.getGlobalBounds().intersects(ally.shape.getGlobalBounds())) {
-            if (ally.getisReviving()) {
+            if (ally.getisVulnerable()) {
                 cout << "Ally was killed while reviving!\n";
                 ally.setAllyAlive(false);  // Kill the ally
             }
@@ -45,13 +75,13 @@ void Enemy::checkForAllyCollision(vector<Ally>& allies) {
 }
 
 void Enemy::checkForPlayerCollision(Player& player) {
-        if (shape.getGlobalBounds().intersects(player.shape.getGlobalBounds())) {
-            player.setIsAlive(false);
-            return;
-
-        }
+    if (!player.isPlayerInvincible() && shape.getGlobalBounds().intersects(player.shape.getGlobalBounds())) {
+        player.setIsAlive(false);
+    }
 }
+
 
 bool Enemy::isStunned() const {
     return stunTimer > 0;
 }
+

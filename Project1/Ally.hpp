@@ -4,15 +4,21 @@
 #include "Player.hpp"
 #include <vector>
 #include "Enemy.hpp"
+#include <map>
 
 class Ally : public Entity {
 private:
     bool isAlive = true;
     bool closePlayer = false;
     float reviveProgress = 0.0f;  // Time spent reviving
-    bool isReviving = false;
+    bool isVulnerable = false;
+   
+
 
 public:
+    static int alliesReviving;  // Tracks how many allies are reviving
+
+
     static constexpr float SPEED = 110.0f;
     static constexpr float REVIVE_TIME = 3.0f;  // 3 seconds to revive
     float deltaTime = 0.0f;
@@ -28,9 +34,14 @@ public:
 	void setReviveProgress(float reviveProgress);
 	float getReviveProgress();
 
-    bool getisReviving();
+    bool getisVulnerable();
+    void setisVulnerable(bool vulnerable);
 	bool isAllyAlive();
 	void setAllyAlive(bool alive);
+    static void increaseRevivalCount();
+    static void decreaseRevivalCount();
+
+    void applySeparationForce(vector<Ally>& allies);
 };
 
 

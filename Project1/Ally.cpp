@@ -1,12 +1,24 @@
-#include "Ally.hpp"
+﻿#include "Ally.hpp"
 #include <cmath>
 #include <iostream>
 
 Ally::Ally(float x, float y) : Entity(x, y, Color::Yellow) {}
+int Ally::alliesReviving = 0;
+
+void Ally::increaseRevivalCount() {
+    alliesReviving++;
+}
+void Ally::decreaseRevivalCount() {
+    if (alliesReviving > 0)
+        alliesReviving--;
+}
+
 
 void Ally::update(float deltaTime, Grid& grid) {
     this->deltaTime = deltaTime;
+    applySeparationForce(allies);  // ✅ Keep allies spaced out
 }
+
 
 bool Ally::getClosePlayer() {
 	return closePlayer;
@@ -16,12 +28,8 @@ void Ally::setClosePlayer(bool closePlayer) {
 	this->closePlayer = closePlayer;
 }
 
-void Ally::startReviving() {
-    isReviving = true;
-}
-
 void Ally::stopReviving() {
-    isReviving = false;
+    isVulnerable = false;
     shape.setOutlineThickness(0);
 }
 
@@ -41,8 +49,12 @@ float Ally::getReviveProgress() {
 	return reviveProgress;
 }
 
-bool Ally::getisReviving() {
-	return isReviving;
+bool Ally::getisVulnerable() {
+	return isVulnerable;
+}
+
+void Ally::setisVulnerable(bool vulnerable) {
+    isVulnerable = vulnerable;
 }
 
 bool Ally::isAllyAlive() {
@@ -53,6 +65,40 @@ void Ally::setAllyAlive(bool alive) {
 	isAlive = alive;
 }
 
+
+void Ally::applySeparationForce(vector<Ally>& allies) {
+    const float SEPARATION_DISTANCE = 35.0f;  // Minimum spacing
+    const float PUSH_FORCE = 0.5f;            // Strength of push
+
+    Vector2f totalPush(0, 0);
+    int count = 0;
+
+    auto normalize = [](const Vector2f& vec) -> Vector2f {
+        float length = sqrt(vec.x * vec.x + vec.y * vec.y);
+        return (length > 0) ? Vector2f(vec.x / length, vec.y / length) : Vector2f(0, 0);
+        };
+
+    for (Ally& other : allies) {
+        if (&other == this) continue;  // Skip self
+
+        Vector2f diff = shape.getPosition() - other.shape.getPosition();
+        float distance = sqrt(diff.x * diff.x + diff.y * diff.y);
+
+        if (distance < SEPARATION_DISTANCE && distance > 0) {
+            Vector2f normalizedDiff = normalize(diff);
+            totalPush += normalizedDiff; // Accumulate repelling force
+            count++;
+        }
+    }
+
+    if (count > 0) {
+        totalPush /= static_cast<float>(count);  // Get average push
+        shape.move(totalPush * PUSH_FORCE);  // Apply push
+    }
+}
+
+
+
 // ChasePlayerAction
 ChasePlayerAction::ChasePlayerAction(Ally* ally) : ally(ally) {}
 
@@ -61,7 +107,6 @@ bool ChasePlayerAction::CanExecute() {
 }
 
 void ChasePlayerAction::Execute() {
-	cout << player.getisAlive() << endl;
     if (!ally) {
         cout << "Error: ChasePlayerAction has a null ally reference!\n";
         return;
@@ -92,7 +137,10 @@ void ChasePlayerAction::Execute() {
         float length = sqrt(direction.x * direction.x + direction.y * direction.y);
         if (length > 0) direction /= length;
 
+        // After moving:
         ally->shape.move(direction * Ally::SPEED * deltaTime);
+        ally->applySeparationForce(allies);  // ✅ Prevent overlapping
+
     }
 }
 
@@ -101,12 +149,20 @@ void ChasePlayerAction::Execute() {
 RevivePlayerAction::RevivePlayerAction(Ally* ally) : ally(ally) {}
 
 bool RevivePlayerAction::CanExecute() {
-    return !player.getisAlive(); // Only execute if the player is dead
+    return !player.getisAlive(); // Only execute if the player is dead and no one else is reviving
 }
 
 void RevivePlayerAction::Execute() {
     if (!ally) {
         cout << "Error: RevivePlayerAction has a null ally reference!\n";
+        return;
+    }
+
+    if (!ally->isAllyAlive()) {
+        // If this ally dies while reviving, decrement count
+        if (Ally::alliesReviving > 0) {
+            Ally::decreaseRevivalCount();
+        }
         return;
     }
 
@@ -117,22 +173,27 @@ void RevivePlayerAction::Execute() {
     float distance = sqrt(pow(playerPos.x - allyPos.x, 2) + pow(playerPos.y - allyPos.y, 2));
     const float MIN_DISTANCE = 45.0f;
 
+    ally->setisVulnerable(true);
+
     if (distance > MIN_DISTANCE) {
-        cout << "Moving closer to revive Player...\n";
         Vector2f direction = playerPos - allyPos;
         float length = sqrt(direction.x * direction.x + direction.y * direction.y);
         if (length > 0) direction /= length;
 
         ally->shape.move(direction * Ally::SPEED * deltaTime);
-        return; // Don't start reviving yet!
+        ally->applySeparationForce(allies);
+
+        return;
     }
 
-    // If close enough, start reviving
+    // If no valid allies are reviving, start revival
+    if (Ally::alliesReviving == 0) {
+        Ally::increaseRevivalCount();
+    }
+
     ally->setClosePlayer(true);
-    ally->startReviving();
     ally->setReviveProgress(ally->getReviveProgress() + deltaTime);
 
-    // Flash color effect
     float progress = ally->getReviveProgress();
     if (static_cast<int>(progress * 5) % 2 == 0) {
         ally->shape.setOutlineThickness(3);
@@ -144,15 +205,20 @@ void RevivePlayerAction::Execute() {
         ally->shape.setOutlineColor(Color::White);
     }
 
-    // If revival is complete, bring the player back
     if (ally->isRevivalComplete()) {
         cout << "Player revived!\n";
+
         player.setIsAlive(true);
+        player.activateInvincibility();
         ally->resetReviveProgress();
+        ally->setisVulnerable(false);
         ally->shape.setOutlineThickness(0);
         ally->shape.setFillColor(Color::Yellow);
+
+        Ally::decreaseRevivalCount();
     }
 }
+
 
 
 
@@ -193,7 +259,10 @@ void DefendPlayerAction::Execute() {
     if (length > MAX_DISTANCE) {
         // Move closer
         direction /= length;
+        // After moving:
         ally->shape.move(direction * Ally::SPEED * deltaTime);
+        ally->applySeparationForce(allies);  // ✅ Prevent overlapping
+
     }
     else if (length < MIN_DISTANCE) {
         // Move away slightly
@@ -201,7 +270,10 @@ void DefendPlayerAction::Execute() {
         length = sqrt(direction.x * direction.x + direction.y * direction.y);
         if (length > 0) direction /= length;
 
+        // After moving:
         ally->shape.move(direction * Ally::SPEED * deltaTime);
+        ally->applySeparationForce(allies);  // ✅ Prevent overlapping
+
     }
 }
 
@@ -212,9 +284,15 @@ bool DeathAction::CanExecute(){
 
 void DeathAction::Execute() {
     cout << "Ally has died. No further actions can be taken.\n";
-    ally->shape.setFillColor(Color(130, 175, 130));; // Change color to indicate death
+    ally->shape.setFillColor(Color(130, 175, 130)); 
     ally->shape.setOutlineThickness(0);
+
+    // Ensure dead allies don't count as revivers
+    if (Ally::alliesReviving > 0) {
+        Ally::decreaseRevivalCount();
+    }
 }
+
 
 
 
@@ -261,21 +339,40 @@ void GOAPAgent::UpdatePlan() {
 }
 
 void GOAPAgent::PerformActions() {
-    
-	if (!owner->isAllyAlive()) {
-		UpdateGoal(Goal::Death);
-	}
-    else if (player.getIsEnemyNear() && player.getisAlive()) {
-        cout << endl << endl << endl << "wrar :3" << endl << endl << endl;
-        UpdateGoal(Goal::Defend);
+    cout << "Current Goal: " << static_cast<int>(goal) << endl;
+
+    if (!owner->isAllyAlive()) {
+        cout << "Switching to Death goal\n";
+        UpdateGoal(Goal::Death);
     }
-    else if (!player.getisAlive()) {
+    else if (owner->getReviveProgress() > 0) {  // ✅ If already reviving, don't change goal
         UpdateGoal(Goal::Revive);
     }
-    else if (player.getisAlive()) {
+    else if (!player.getisAlive()) {
+        if (Ally::alliesReviving == 0) {
+            UpdateGoal(Goal::Revive);
+        }
+        else {
+            cout << "One or more allies reviving, but this one is NOT the reviver.\n";
+            owner->setisVulnerable(false);
+            if (player.getIsEnemyNear()) {
+                UpdateGoal(Goal::Defend);
+            }
+            else {
+                UpdateGoal(Goal::Chase);
+            }
+        }
+    }
+    else if (player.getIsEnemyNear()) {
+        cout << "Switching to Defend goal (Enemy near and player alive)\n";
+        UpdateGoal(Goal::Defend);
+    }
+    else {
+        cout << "Switching to Chase goal\n";
         UpdateGoal(Goal::Chase);
     }
 
+    cout << "New Goal After Update: " << static_cast<int>(goal) << endl;
 
     for (auto& action : plan) {
         if (action->CanExecute()) {
@@ -287,9 +384,11 @@ void GOAPAgent::PerformActions() {
     }
 }
 
+
+
 vector<Action*> GOAPAgent::getPlan() {
     return plan;
 }
 
 
-vector<Ally> allies = { Ally(100, 100) };
+vector<Ally> allies = { Ally(100, 100) , Ally(150,150)};

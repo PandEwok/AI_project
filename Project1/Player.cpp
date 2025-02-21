@@ -5,21 +5,46 @@
 Player::Player(float x, float y) : Entity(x, y, Color::Blue) { SPEED = 250.0f; }
 
 void Player::update(float deltaTime, Grid& grid) {
-
     if (isAlive) {
-        shape.setFillColor(Color::Blue);
-		shape.setOutlineThickness(0);
+        if (Keyboard::isKeyPressed(Keyboard::Up)) {
+            isAlive =false;
+        }
+        // Handle Invincibility
+        if (isInvincible) {
+            invincibilityTimer -= deltaTime;
+            if (invincibilityTimer <= 0.0f) {
+                isInvincible = false;
+                shape.setFillColor(sf::Color::Blue); // Reset color after invincibility
+                shape.setOutlineThickness(0);
+            }
+            else {
+                // Blinking effect to indicate invincibility
+                if (static_cast<int>(invincibilityTimer * 10) % 2 == 0) {
+                    shape.setFillColor(sf::Color::Transparent);
+                    shape.setOutlineColor(sf::Color::Blue);
+                    shape.setOutlineThickness(1);
 
+                }
+                else {
+                    shape.setFillColor(sf::Color::Blue);
+                    shape.setOutlineThickness(0);
+
+                }
+            }
+        }
+        else {
+            shape.setFillColor(sf::Color::Blue);
+        }
+
+        // Movement logic
         Vector2f movement(0.f, 0.f);
         if (Keyboard::isKeyPressed(Keyboard::Z)) movement.y -= SPEED * deltaTime;
         if (Keyboard::isKeyPressed(Keyboard::S)) movement.y += SPEED * deltaTime;
         if (Keyboard::isKeyPressed(Keyboard::Q)) movement.x -= SPEED * deltaTime;
         if (Keyboard::isKeyPressed(Keyboard::D)) movement.x += SPEED * deltaTime;
-        //DEBUG
-        if (Keyboard::isKeyPressed(Keyboard::Up)) isAlive = !isAlive;
 
-    Vector2f newPosition = shape.getPosition() - shape.getSize()/2.f + movement;
-    FloatRect newBounds(newPosition, shape.getSize());
+        Vector2f newPosition = shape.getPosition() - shape.getSize() / 2.f + movement;
+        FloatRect newBounds(newPosition, shape.getSize());
 
         auto isWalkable = [&](float x, float y) {
             int gridX = static_cast<int>(x / CELL_SIZE);
@@ -35,15 +60,30 @@ void Player::update(float deltaTime, Grid& grid) {
         }
     }
     else if (!isAlive) {
-        //DEBUG
-        if (Keyboard::isKeyPressed(Keyboard::Down)) isAlive = !isAlive;
-
+        if (Keyboard::isKeyPressed(Keyboard::Down)) {
+            isAlive = true;
+            isInvincible = true; // Activate invincibility
+            invincibilityTimer = INVINCIBILITY_DURATION;
+        }
 
         shape.setFillColor(Color(155, 155, 160));
         shape.setOutlineColor(Color::Blue);
         shape.setOutlineThickness(3);
     }
 }
+
+
+bool Player::isPlayerInvincible() const {
+    return isInvincible;
+}
+
+void Player::activateInvincibility() {
+    isInvincible = true;
+    invincibilityTimer = INVINCIBILITY_DURATION;
+    cout << "Invincibility activated!\n";
+}
+
+
 
 bool Player::checkForEnemies(vector<shared_ptr<Enemy>>& enemies, vector<shared_ptr<Enemy>>& BTenemies) {
     enemyNear = false;  // Reset flag
@@ -119,4 +159,7 @@ bool Player::getIsEnemyNear() {
     return enemyNear;
 }
 
+
 Player player(200, 400);
+
+

@@ -1,19 +1,39 @@
-﻿  Enemy.cpp
-  Entity.cpp
-  Grid.cpp
-D:\AI_project\Project1\Entity.hpp(4,10): error C1083: Impossible d'ouvrir le fichier include : 'SFML/Graphics.hpp' : No such file or directory
-  (compiler le fichier source 'Enemy.cpp')
-  
-D:\AI_project\Project1\Entity.hpp(4,10): error C1083: Impossible d'ouvrir le fichier include : 'SFML/Graphics.hpp' : No such file or directory
-  (compiler le fichier source 'Entity.cpp')
-  
-D:\AI_project\Project1\grid.hpp(5,10): error C1083: Impossible d'ouvrir le fichier include : 'SFML/Graphics.hpp' : No such file or directory
-  (compiler le fichier source 'Grid.cpp')
-  
-  main.cpp
-D:\AI_project\Project1\main.cpp(1,10): error C1083: Impossible d'ouvrir le fichier include : 'SFML/Graphics.hpp' : No such file or directory
+﻿  Ally.cpp
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Ally.cpp(122,20): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Ally.cpp(173,20): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+  BTEnemy.cpp
+  BTNode.cpp
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\BTNode.cpp(57,54): warning C4267: '=' : conversion de 'size_t' en 'int', perte possible de données
+  BigEnemy.cpp
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\BigEnemy.cpp(19,20): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+  Enemy.cpp
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Enemy.cpp(39,28): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
   Player.cpp
-D:\AI_project\Project1\Entity.hpp(4,10): error C1083: Impossible d'ouvrir le fichier include : 'SFML/Graphics.hpp' : No such file or directory
-  (compiler le fichier source 'Player.cpp')
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Player.cpp(97,28): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\Player.cpp(131,28): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+  main.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\xutility(406,82): warning C4244: 'argument' : conversion de '_Ty' en 'float', perte possible de données
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\xutility(406,82): warning C4244:         with
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\xutility(406,82): warning C4244:         [
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\xutility(406,82): warning C4244:             _Ty=int
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\xutility(406,82): warning C4244:         ]
+  (compiler le fichier source 'main.cpp')
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\xutility(406,82):
+      le contexte d’instanciation du modèle (le plus ancien) est
+          C:\Users\jtranhuu\source\repos\PandEwok\AI_project\Project1\main.cpp(16,23):
+          voir la référence à l'instanciation de la fonction modèle 'std::shared_ptr<BigEnemy> std::make_shared<BigEnemy,int,int>(int &&,int &&)' en cours de compilation
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\memory(2906,46):
+          voir la référence à l'instanciation de la fonction modèle 'std::_Ref_count_obj2<BigEnemy>::_Ref_count_obj2<_Ty,_Ty>(_Ty &&,_Ty &&)' en cours de compilation
+          with
+          [
+              _Ty=int
+          ]
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\memory(2095,18):
+          voir la référence à l'instanciation de la fonction modèle 'void std::_Construct_in_place<_Ty,int,int>(_Ty &,int &&,int &&) noexcept(false)' en cours de compilation
+          with
+          [
+              _Ty=BigEnemy
+          ]
   
   Génération de code en cours...
+  Project1.vcxproj -> C:\Users\jtranhuu\source\repos\PandEwok\AI_project\x64\Debug\Project1.exe

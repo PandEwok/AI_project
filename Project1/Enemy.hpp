@@ -12,6 +12,7 @@ class Enemy : public Entity {
 protected:
     float stunTimer = 0.0f;
     static constexpr float STUN_DURATION = 3.0f;
+    static constexpr float DETECTION_RADIUS = 40 * 6;
 
 public:
     Enemy(float x, float y);
@@ -22,6 +23,8 @@ public:
     void checkForPlayerCollision(Player& player);
 
     bool isStunned() const;
+
+    sf::Vector2f getPosition();
 };
 
 #endif // ENEMY_HPP

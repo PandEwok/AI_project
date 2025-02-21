@@ -12,6 +12,10 @@ class Player : public Entity {
 private:
     vector<vector<shared_ptr<Enemy>>*> enemyListPtr = {};  // Store pointer to unique_ptr vector
 
+
+    bool isInvincible = false;
+    float invincibilityTimer = 0.0f;
+    static constexpr float INVINCIBILITY_DURATION = 2.0f; // 2 seconds of invincibility
     bool isAlive = true;
     bool enemyNear = false;
     static constexpr float DETECTION_RADIUS = 250.0f;
@@ -24,9 +28,13 @@ public:
 	void setIsAlive(bool alive);
     bool getIsEnemyNear();
 
+    void activateInvincibility();
+    bool isPlayerInvincible() const;
+
     bool checkForEnemies(vector<shared_ptr<Enemy>>& enemies, vector<shared_ptr<Enemy>>& BTenemies);
 
     Vector2f getNearestEnemyPosition();
+
 
 };
 
