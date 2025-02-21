@@ -17,7 +17,7 @@ vector<Vector2i> Pathfinding::findPath(Grid& grid, Vector2i start, Vector2i end)
 
         //    cout << "Position" << n->position.x << " " << n->position.y << "   Cout : " << n->fCost << endl;
         //}
-        cout << endl;
+        //cout << endl;
         sort(openList.begin(), openList.end(), [](Node* a, Node* b) { return a->fCost < b->fCost; });
         Node* current = openList.front();
         openList.erase(openList.begin());

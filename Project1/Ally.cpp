@@ -221,10 +221,6 @@ void RevivePlayerAction::Execute() {
 
 
 
-
-
-
-
 // DefendPlayerAction
 DefendPlayerAction::DefendPlayerAction(Ally* ally) : ally(ally) {}
 

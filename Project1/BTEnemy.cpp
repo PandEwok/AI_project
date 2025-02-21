@@ -25,7 +25,7 @@ BTEnemy::BTEnemy(float x, float y) : Enemy(x,y)
 
 void BTEnemy::update(float deltaTime, Grid& grid)
 {
-	checkForAllyCollision(allies);   // Ensure big enemies also get stunned
+	checkForAllyCollision(allies);   // Ensure big enemies also get stunned*
 
 	if (isStunned()) {
 		shape.setFillColor(Color(70, 70, 70));
@@ -34,6 +34,7 @@ void BTEnemy::update(float deltaTime, Grid& grid)
 		waypoints.clear();
 		return;
 	}
+	checkForPlayerCollision(player);
 
 	root->execute();
 	if (abs(player.shape.getPosition().x - shape.getPosition().x) <= attackRange and abs(player.shape.getPosition().y - shape.getPosition().y) <= attackRange) {
@@ -49,8 +50,11 @@ void BTEnemy::update(float deltaTime, Grid& grid)
 		waypoints.clear();
 	}
 
-	/*if (player.shape.getPosition().x - shape.getPosition().x <= 10 and player.shape.getPosition().y - shape.getPosition().y <= 10) {
-		blackboard.SetValue("PlayerDetected", 1);
+	for (auto& ally : allies) {
+		if (ally.shape.getPosition().x - shape.getPosition().x <= 40*2 and ally.shape.getPosition().y - shape.getPosition().y <= 40 * 2) {
+			blackboard.SetValue("NearAlly", 1);
+			break;
+		}
+		else blackboard.SetValue("NearAlly", 0);
 	}
-	else blackboard.SetValue("PlayerDetected", 0);*/
 }

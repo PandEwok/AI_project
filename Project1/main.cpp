@@ -108,6 +108,13 @@ int main() {
         grid.draw(window);
 
         for (const auto& enemy : enemies) {
+            for (Vector2i pos : enemy->waypoints) {
+                RectangleShape rect(Vector2f(CELL_SIZE, CELL_SIZE));
+                rect.setOrigin(CELL_SIZE / 2, CELL_SIZE / 2);
+                rect.setPosition(Vector2f(pos));
+                rect.setFillColor(Color(255, 20, 20, 100));
+                window.draw(rect);
+            }
             window.draw(enemy->shape);
             RectangleShape rect(Vector2f(1, 1));
             rect.setPosition(enemy->shape.getPosition());
@@ -130,7 +137,6 @@ int main() {
         for (const auto& ally : allies)
             window.draw(ally.shape);
         window.display();
-
     }
     return 0;
 }
